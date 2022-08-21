@@ -1,0 +1,55 @@
+const mongoose = require("mongoose");
+const Double = require("@mongoosejs/double");
+
+// require("mongoose-double")(mongoose);
+// var SchemaTypes = mongoose.Schema.Types;
+
+const PlaceSchema = mongoose.Schema({
+  PlaceTitle: {
+    type: String,
+  },
+  PlaceDescription: {
+    type: String,
+  },
+  ImageUrl: {
+    type: String,
+  },
+  Rating: {
+    type: String,
+  },
+  Coordinates: {
+    Latitude: {
+      type: Double,
+    },
+    Longtitude: {
+      type: Double,
+    },
+  },
+  Facilities: {
+    RoomType: {
+      type: String,
+    },
+    NoOfBeds: {
+      type: Number,
+    },
+    WashRoomType: {
+      type: Array,
+    },
+    OfferingMeals: {
+      type: Boolean,
+      default: false,
+    },
+    Facilities: {
+      type: Array,
+    },
+    Payment: {
+      type: String,
+      default: "Monthly",
+    },
+  },
+  Cost: {
+    type: String,
+  },
+});
+
+module.exports = mongoose.model("Places", PlaceSchema);
