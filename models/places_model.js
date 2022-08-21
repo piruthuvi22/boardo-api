@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Double = require("@mongoosejs/double");
+// const Double = require("@mongoosejs/double");
 
 // require("mongoose-double")(mongoose);
 // var SchemaTypes = mongoose.Schema.Types;
@@ -19,10 +19,10 @@ const PlaceSchema = mongoose.Schema({
   },
   Coordinates: {
     Latitude: {
-      type: Double,
+      type: String,
     },
     Longtitude: {
-      type: Double,
+      type: String,
     },
   },
   Facilities: {
