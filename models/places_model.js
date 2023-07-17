@@ -50,6 +50,10 @@ const PlaceSchema = mongoose.Schema({
   Cost: {
     type: String,
   },
+  status: {
+    type: String,
+    default: "AVAILABLE", // AVAILABLE, RESERVED, BLOCKED
+  },
 });
 
 module.exports = mongoose.model("Places", PlaceSchema);

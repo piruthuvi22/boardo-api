@@ -8,6 +8,15 @@ Router.get("/", (req, res) => {
 });
 
 //http://192.168.8.139:1000/wish-list/get-status
+Router.get("/get-wishlist", async (req, res) => {
+  WishList.find({}, (err, docs) => {
+    if (err) res.status(500).json(err);
+    console.log("get-wishlist");
+    res.status(200).json(docs);
+  });
+});
+
+//http://192.168.8.139:1000/wish-list/get-status
 Router.get("/get-status/:_id", async (req, res) => {
   let isExists = await WishList.findOne({ PlaceId: req.params._id });
   if (isExists) {
@@ -18,24 +27,24 @@ Router.get("/get-status/:_id", async (req, res) => {
 });
 
 //http://192.168.8.139:1000/wish-list/add-to-wish
-Router.post("/add-to-wish", async (req, res) => {
-  const bodyData = req.body;
-  let isExists = await WishList.findOne({ PlaceId: bodyData.id });
+Router.post("/add-remove-wishlist/:id", async (req, res) => {
+  const placeId = req.params.id;
+  let isExists = await WishList.findOne({ PlaceId: placeId });
   if (!isExists) {
     let newWish = new WishList({
-      PlaceId: bodyData.id,
+      PlaceId: placeId,
     });
     newWish.save((err, doc) => {
-      if (err) res.status(500).json("Place save error");
+      if (err) res.status(500).json(placeId + "Place save error");
       res.status(200).json({ msg: " Added to wish list", status: "added" });
     });
   } else {
-    let deletedDoc = await WishList.findOneAndDelete({ PlaceId: bodyData.id });
+    let deletedDoc = await WishList.findOneAndDelete({ PlaceId: placeId });
     deletedDoc
       ? res
           .status(200)
           .json({ msg: " Place removed from wishlist", status: "removed" })
-      : res.status(500).json(bodyData.id + "Place remove error");
+      : res.status(500).json(placeId + "Place remove error");
   }
 });
 

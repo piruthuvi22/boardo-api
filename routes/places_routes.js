@@ -36,9 +36,23 @@ Router.post("/add-place", async (req, res) => {
 
 //http://192.168.8.139:1000/places/get-places
 Router.get("/get-places", async (req, res) => {
-  Places.find({}, (err, docs) => {
-    if (err) res.status(500).json("get places error");
-    console.log("places get");
+  Places.find(
+    {
+      status: "AVAILABLE",
+    },
+    (err, docs) => {
+      if (err) res.status(500).json("get places error");
+      console.log("places get", docs.length);
+      res.status(200).json(docs);
+    }
+  );
+});
+
+//http://192.168.8.139:1000/places/get-place/id
+Router.get("/get-place/:id", async (req, res) => {
+  Places.find({ PlaceId: req.params.id }, (err, docs) => {
+    if (err) res.status(500).json("get place error");
+    console.log("place get");
     res.status(200).json(docs);
   });
 });
