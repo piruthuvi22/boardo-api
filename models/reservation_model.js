@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const reservation = mongoose.Schema({
-  Username: {
+  UserId: {
     type: String,
   },
   PlaceId: {

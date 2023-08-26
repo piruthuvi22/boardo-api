@@ -21,7 +21,7 @@ const PlaceSchema = mongoose.Schema({
     Latitude: {
       type: String,
     },
-    Longtitude: {
+    Longitude: {
       type: String,
     },
   },

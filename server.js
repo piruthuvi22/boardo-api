@@ -25,7 +25,7 @@ let connection = mongoose.connect(uri, {
 });
 
 app.get("/", (req, res) => {
-  res.send("Boardo api listing on" + process.env.PORT);
+  res.send(`<h1>API listing on ${process.env.PORT}</h1>`);
 });
 
 app.listen(process.env.PORT || 5000, () => {

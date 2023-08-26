@@ -9,7 +9,7 @@ Router.get("/", (req, res) => {
 });
 
 Router.post("/new", async (req, res) => {
-  let { Username, PlaceId } = req.body;
+  let { UserId, PlaceId } = req.body;
 
   try {
     //  check if place exists
@@ -22,7 +22,7 @@ Router.post("/new", async (req, res) => {
    
       // create new reservation
     const newReservation = new Reservation({
-      Username,
+      UserId,
       PlaceId,
     });
     // save reservation
