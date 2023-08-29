@@ -19,10 +19,10 @@ const PlaceSchema = mongoose.Schema({
   },
   Coordinates: {
     Latitude: {
-      type: String,
+      type: Number,
     },
     Longitude: {
-      type: String,
+      type: Number,
     },
   },
   Facilities: {
@@ -48,7 +48,7 @@ const PlaceSchema = mongoose.Schema({
     },
   },
   Cost: {
-    type: String,
+    type: Number,
   },
   status: {
     type: String,

@@ -8,23 +8,35 @@ Router.get("/", (req, res) => {
 });
 //http://192.168.8.139:1000/users/register
 Router.post("/register", async (req, res) => {
+  console.log("Hello");
   const bodyData = req.body;
-  let userData = await User.findOne({ Username: bodyData.username });
-  if (!userData) {
-    const user = new User({
-      Username: bodyData.username,
-      Password: bodyData.password,
-    });
+  console.log("bodyData:", bodyData);
 
-    user.save((err, doc) => {
-      if (err) {
-        res.json(err);
-      }
-      console.log("Saved");
-      res.status(200).json(doc);
-    });
+  const user = new User({
+    email: bodyData.email,
+    displayName: bodyData.displayName,
+    userRole: bodyData.userRole,
+  });
+
+  user.save((err, doc) => {
+    if (err) {
+      res.json(err);
+    }
+    console.log("Saved");
+    res.status(200).json(doc);
+  });
+});
+Router.put("/updateDisplayName", async (req, res) => {
+  const { email, displayName, phoneNumber } = req.body;
+  const user = await User.findOne({ email: email });
+  console.log(user);
+  if (user) {
+    user.displayName = displayName;
+    user.phoneNumber = phoneNumber;
+    user.save();
+    res.status(200).json("Update success");
   } else {
-    res.json("Account already exists");
+    res.status(404).json("Account not found");
   }
 });
 
