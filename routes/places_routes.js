@@ -11,9 +11,11 @@ Router.get("/", (req, res) => {
 //http://192.168.8.139:1000/places/add-place
 Router.post("/add-place", async (req, res) => {
   const bodyData = req.body;
+  console.log("bodyData:", bodyData);
+
   let newPlace = new Places({
-    PlaceTitle: "PlaceTitle1",
-    PlaceDescription: "PlaceDescription1",
+    PlaceTitle: bodyData?.PlaceTitle,
+    PlaceDescription: bodyData?.PlaceDescription,
     Image: "Image1",
     Rating: "4.2",
     Coordinates: {
@@ -21,19 +23,19 @@ Router.post("/add-place", async (req, res) => {
       Longitude: 222,
     },
     Facilities: {
-      RoomType: "Single",
-      NoOfBeds: 4,
-      WashRoomType: ["Traditional"],
-      OfferingMeals: false,
-      Facilities: ["fan", "ac"],
-      Payment: "Monthly",
+      RoomType: bodyData?.Facilities?.RoomType,
+      NoOfBeds: bodyData?.Facilities?.NoOfBeds,
+      WashRoomType: bodyData?.Facilities?.WashRoomType,
+      OfferingMeals: bodyData?.Facilities?.OfferingMeals,
+      Facilities: bodyData?.Facilities?.Facilities,
+      Payment: bodyData?.Facilities?.Payment,
     },
-    Cost: 6000,
+    Cost: bodyData?.Cost,
   });
-  // newPlace.save((err, doc) => {
-  //   if (err) res.status(500).json("Place save error");
-  //   res.status(200).json({ "Place saved": doc });
-  // });
+  newPlace.save((err, doc) => {
+    if (err) res.status(500).json("Place save error");
+    res.status(200).json({ "Place saved": doc });
+  });
 });
 
 //http://192.168.8.139:1000/places/get-places
