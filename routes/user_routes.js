@@ -8,14 +8,12 @@ Router.get("/", (req, res) => {
 });
 //http://192.168.8.139:1000/users/register
 Router.post("/register", async (req, res) => {
-  console.log("Hello");
   const bodyData = req.body;
   console.log("bodyData:", bodyData);
 
   const user = new User({
-    email: bodyData.email,
-    displayName: bodyData.displayName,
-    userRole: bodyData.userRole,
+    email: bodyData?.email,
+    userRole: bodyData?.userRole,
   });
 
   user.save((err, doc) => {
@@ -40,16 +38,14 @@ Router.put("/updateDisplayName", async (req, res) => {
   }
 });
 
-//http://192.168.8.139:1000/users/login
-Router.post("/login", async (req, res) => {
-  const { username, password, role } = req.body;
-  let userData = await User.findOne({ Username: username });
+//http://192.168.8.139:1000/users/getUserRole
+Router.get("/getUserRole", async (req, res) => {
+  const email = req.query.email;
+  console.log("email:", email);
+  let userData = await User.findOne({ email: email });
+  console.log(userData);
   if (userData) {
-    if (userData.Username == username && userData.Password == password) {
-      res.status(200).json("Login success");
-    } else {
-      res.status(400).json("Login failed");
-    }
+    res.status(200).json(userData?.userRole);
   } else {
     res.status(404).json("Account not found");
   }

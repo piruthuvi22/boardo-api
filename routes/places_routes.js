@@ -4,23 +4,36 @@ const geolib = require("geolib");
 const Router = express.Router();
 
 const Places = require("../models/places_model");
+const Users = require("../models/user_model");
 
-Router.get("/", (req, res) => {
+Router.get("/", async (req, res) => {
   res.send("User ");
+});
+Router.get("/get-uploaded-places", async (req, res) => {
+  const email = req.query.email;
+  const user = await Users.findOne({ email });
+  if (!user) {
+    res.status(404).json("Account not found");
+  }
+  const places = await Places.find({ LandlordId: user?._id });
+  console.log("places", places);
+  res.status(200).json(places);
 });
 //http://192.168.8.139:1000/places/add-place
 Router.post("/add-place", async (req, res) => {
   const bodyData = req.body;
   console.log("bodyData:", bodyData);
+  const user = await Users.findOne({ email: bodyData?.LandlordEmail });
 
   let newPlace = new Places({
+    LandlordId: user?._id,
     PlaceTitle: bodyData?.PlaceTitle,
     PlaceDescription: bodyData?.PlaceDescription,
     Image: "Image1",
     Rating: "4.2",
     Coordinates: {
-      Latitude: 111,
-      Longitude: 222,
+      Latitude: bodyData?.Coordinates?.latitude,
+      Longitude: bodyData?.Coordinates?.longitude,
     },
     Facilities: {
       RoomType: bodyData?.Facilities?.RoomType,
