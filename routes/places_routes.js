@@ -16,7 +16,6 @@ Router.get("/get-uploaded-places", async (req, res) => {
     res.status(404).json("Account not found");
   }
   const places = await Places.find({ LandlordId: user?._id });
-  console.log("places", places);
   res.status(200).json(places);
 });
 //http://192.168.8.139:1000/places/add-place
