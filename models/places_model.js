@@ -5,6 +5,10 @@ const mongoose = require("mongoose");
 // var SchemaTypes = mongoose.Schema.Types;
 
 const PlaceSchema = mongoose.Schema({
+  LandlordId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+  },
   PlaceTitle: {
     type: String,
   },
