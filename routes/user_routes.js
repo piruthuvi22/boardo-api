@@ -2,6 +2,8 @@ const express = require("express");
 const Router = express.Router();
 
 const User = require("../models/user_model");
+const Places = require("../models/places_model");
+const Reservations = require("../models/reservation_model");
 
 Router.get("/", (req, res) => {
   res.send("User ");
@@ -41,13 +43,39 @@ Router.put("/updateDisplayName", async (req, res) => {
 //http://192.168.8.139:1000/users/getUserRole
 Router.get("/getUserRole", async (req, res) => {
   const email = req.query.email;
-  console.log("email:", email);
   let userData = await User.findOne({ email: email });
-  console.log(userData);
   if (userData) {
     res.status(200).json(userData?.userRole);
   } else {
     res.status(404).json("Account not found");
+  }
+});
+
+Router.get("/getLandlord", async (req, res) => {
+  try {
+    const placeId = req.query?.placeId;
+    console.log(placeId);
+    const place = await Places?.findOne({ _id: placeId });
+    const landlordId = place?.LandlordId;
+    const llDetails = await User.findOne({ _id: landlordId });
+    console.log(llDetails);
+    res.status(200).json(llDetails);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+Router.get("/getStudent", async (req, res) => {
+  try {
+    const placeId = req.query?.placeId;
+
+    const reservation = await Reservations.findOne({ PlaceId: placeId });
+
+    const studentId = reservation?.UserId;
+    const studentDetails = await User.findOne({ _id: studentId });
+
+    res.status(200).json(studentDetails);
+  } catch (err) {
+    res.status(500).json(err);
   }
 });
 module.exports = Router;

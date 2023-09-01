@@ -10,6 +10,7 @@ Router.get("/", async (req, res) => {
   res.send("User ");
 });
 Router.get("/get-uploaded-places", async (req, res) => {
+  console.log(req.query);
   const email = req.query.email;
   const user = await Users.findOne({ email });
   if (!user) {
@@ -21,7 +22,7 @@ Router.get("/get-uploaded-places", async (req, res) => {
 //http://192.168.8.139:1000/places/add-place
 Router.post("/add-place", async (req, res) => {
   const bodyData = req.body;
-  console.log("bodyData:", bodyData);
+
   const user = await Users.findOne({ email: bodyData?.LandlordEmail });
 
   let newPlace = new Places({
