@@ -15,6 +15,7 @@ Router.post("/new", async (req, res) => {
   try {
     //  check if place exists
     const place = await Place.findOne({ _id: PlaceId });
+
     if (!place) return res.status(400).json({ msg: "Place does not exist." });
 
     // check if place is available
@@ -29,15 +30,18 @@ Router.post("/new", async (req, res) => {
       UserId,
       PlaceId,
       Date: Date.now(),
+
     });
     // save reservation
     const reservation = await newReservation.save();
 
     // update place status
+
     await Place.findByIdAndUpdate(PlaceId, { status: "PENDING" });
+
     res.json(reservation);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json(error);
   }
 });
 Router.put("/accepted", async (req, res) => {
@@ -95,20 +99,21 @@ Router.get("/getAvailableNotification", async (req, res) => {
   }
 });
 
-Router.post("/cancel/:reservationId", async (req, res) => {
-  let { reservationId } = req.params.reservationId;
+Router.post("/cancel", async (req, res) => {
+  let { reservationId } = req.query;
 
   try {
     // cancel reservation
     const reservation = await Reservation.findByIdAndDelete(reservationId);
     if (!reservation)
-      return res.status(400).json({ msg: "Reservation does not exist." });
+      return res.status(404).json({ msg: "Reservation does not exist." });
 
     // update place status
     await Place.findByIdAndUpdate(reservation.PlaceId, { status: "AVAILABLE" });
-    res.json(reservation);
+    res.status(200).json(reservation);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json(error);
   }
 });
+
 module.exports = Router;
