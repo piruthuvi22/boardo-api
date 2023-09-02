@@ -56,9 +56,6 @@ Router.get("/get-places", async (req, res) => {
   // baseCoord = { latitude: "6.796764", longitude: "79.8996582" };
   // console.log("baseCoord", baseCoord);
   Places.find(
-    {
-      status: "AVAILABLE",
-    },
     async (err, docs) => {
       if (err) {
         res.status(500).json("Fetching places error");
