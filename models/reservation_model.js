@@ -2,11 +2,17 @@ const mongoose = require("mongoose");
 
 const reservation = mongoose.Schema({
   UserId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   PlaceId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Places",
+  },
+  Date: {
+    type: Date,
+    default: Date.now(),
   },
 });
 
-module.exports = mongoose.model("Reservation",reservation);
+module.exports = mongoose.model("Reservation", reservation);
