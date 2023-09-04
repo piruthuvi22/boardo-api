@@ -54,11 +54,10 @@ Router.get("/getUserRole", async (req, res) => {
 Router.get("/getLandlord", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
-    console.log(placeId);
     const place = await Places?.findOne({ _id: placeId });
     const landlordId = place?.LandlordId;
     const llDetails = await User.findOne({ _id: landlordId });
-    console.log(llDetails);
+    console.log("llDetails: ", llDetails);
     res.status(200).json(llDetails);
   } catch (err) {
     res.status(500).json(err);

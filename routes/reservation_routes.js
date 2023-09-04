@@ -85,7 +85,7 @@ Router.get("/getAvailableNotification", async (req, res) => {
     if (reservation) {
       const place = await Place.findOne({ _id: reservation?.PlaceId });
       if (place.status === "RESERVED") {
-        console.log(place.status, placeId);
+        console.log("getAvailableNotification:", place.status, placeId);
         res.json(true);
       }
     }
