@@ -30,7 +30,6 @@ Router.post("/new", async (req, res) => {
       UserId,
       PlaceId,
       Date: Date.now(),
-
     });
     // save reservation
     const reservation = await newReservation.save();
@@ -88,9 +87,12 @@ Router.get("/getAvailableNotification", async (req, res) => {
     });
     if (reservation) {
       const place = await Place.findOne({ _id: reservation?.PlaceId });
+
       if (place.status === "RESERVED") {
         console.log("getAvailableNotification:", place.status, placeId);
         res.json(true);
+      } else {
+        res.json(false);
       }
     }
     // res.json({ msg: "Reservation does not exist" });
