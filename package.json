@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "node server.js",
+    "nodemon":"nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -17,5 +18,8 @@
     "geolib": "^3.3.4",
     "mongoose": "^6.5.2",
     "nodemon": "^2.0.19"
+  },
+  "engines": {
+    "node": "18"
   }
 }
