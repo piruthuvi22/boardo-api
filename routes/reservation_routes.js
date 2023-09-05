@@ -77,7 +77,8 @@ Router.put("/available", async (req, res) => {
 });
 
 Router.get("/getAvailableNotification", async (req, res) => {
-  const { email, placeId } = req.query;
+  const email = req.query?.email;
+  const placeId = req.query?.placeId;
   try {
     const user = await User.findOne({ email: email });
     const userId = user._id;
@@ -85,6 +86,7 @@ Router.get("/getAvailableNotification", async (req, res) => {
       UserId: userId,
       PlaceId: placeId,
     });
+    if (!reservation) return res.json(false);
     if (reservation) {
       const place = await Place.findOne({ _id: reservation?.PlaceId });
 
