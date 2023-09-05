@@ -29,7 +29,7 @@ Router.post("/add-place", async (req, res) => {
     LandlordId: user?._id,
     PlaceTitle: bodyData?.PlaceTitle,
     PlaceDescription: bodyData?.PlaceDescription,
-    Image: "Image1",
+    ImageUrl: bodyData?.ImageUrl,
     Rating: "4.2",
     Coordinates: {
       Latitude: bodyData?.Coordinates?.latitude,
@@ -56,58 +56,56 @@ Router.get("/get-places", async (req, res) => {
   let baseCoord = req.query.location;
   // baseCoord = { latitude: "6.796764", longitude: "79.8996582" };
   // console.log("baseCoord", baseCoord);
-  Places.find(
-    async (err, docs) => {
-      if (err) {
-        res.status(500).json("Fetching places error");
+  Places.find(async (err, docs) => {
+    if (err) {
+      res.status(500).json("Fetching places error");
+    } else {
+      if (docs.length == 0) {
+        res.status(404).json({ message: "No places found" });
       } else {
-        if (docs.length == 0) {
-          res.status(404).json({ message: "No places found" });
-        } else {
-          const coordinatesArray = docs.map((doc) => {
-            return {
-              latitude: doc.Coordinates.Latitude,
-              longitude: doc.Coordinates.Longitude,
-            };
+        const coordinatesArray = docs.map((doc) => {
+          return {
+            latitude: doc.Coordinates.Latitude,
+            longitude: doc.Coordinates.Longitude,
+          };
+        });
+
+        // let v = geolib.isPointWithinRadius(coord[1], base, 200);
+        let orderd = geolib.orderByDistance(baseCoord, coordinatesArray);
+        // let near = geolib.findNearest(base, coord);
+
+        let response = [];
+        orderd.map((coordinate) => {
+          docs.map((doc) => {
+            if (
+              coordinate.latitude == doc.Coordinates.Latitude &&
+              coordinate.longitude == doc.Coordinates.Longitude
+            ) {
+              response.push(doc);
+            }
           });
+        });
 
-          // let v = geolib.isPointWithinRadius(coord[1], base, 200);
-          let orderd = geolib.orderByDistance(baseCoord, coordinatesArray);
-          // let near = geolib.findNearest(base, coord);
-
-          let response = [];
-          orderd.map((coordinate) => {
-            docs.map((doc) => {
-              if (
-                coordinate.latitude == doc.Coordinates.Latitude &&
-                coordinate.longitude == doc.Coordinates.Longitude
-              ) {
-                response.push(doc);
-              }
-            });
+        // get distance
+        let distanceArray = [];
+        response.map((res) => {
+          distanceArray.push({
+            title: res.PlaceTitle,
+            distance: geolib.getDistance(
+              baseCoord,
+              {
+                latitude: res.Coordinates.Latitude,
+                longitude: res.Coordinates.Longitude,
+              },
+              0.1
+            ),
           });
+        });
 
-          // get distance
-          let distanceArray = [];
-          response.map((res) => {
-            distanceArray.push({
-              title: res.PlaceTitle,
-              distance: geolib.getDistance(
-                baseCoord,
-                {
-                  latitude: res.Coordinates.Latitude,
-                  longitude: res.Coordinates.Longitude,
-                },
-                0.1
-              ),
-            });
-          });
-
-          res.status(200).json(response);
-        }
+        res.status(200).json(response);
       }
     }
-  );
+  });
 });
 
 //http://192.168.8.139:1000/places/get-places-ordered
