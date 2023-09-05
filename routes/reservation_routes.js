@@ -86,6 +86,7 @@ Router.get("/getAvailableNotification", async (req, res) => {
       UserId: userId,
       PlaceId: placeId,
     });
+    if (!reservation) return res.json(false);
     if (reservation) {
       const place = await Place.findOne({ _id: reservation?.PlaceId });
 
