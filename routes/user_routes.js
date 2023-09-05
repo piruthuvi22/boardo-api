@@ -40,6 +40,16 @@ Router.put("/updateDisplayName", async (req, res) => {
   }
 });
 
+Router.get("/getContactNumber", async (req, res) => {
+  const email = req.query?.email;
+  const user = await User.findOne({ email });
+  if (user) {
+    res.status(200).json(user?.phoneNumber);
+  } else {
+    res.json("Account not found");
+  }
+});
+
 //http://192.168.8.139:1000/users/getUserRole
 Router.get("/getUserRole", async (req, res) => {
   const email = req.query.email;
