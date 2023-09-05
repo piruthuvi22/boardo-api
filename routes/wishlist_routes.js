@@ -10,7 +10,7 @@ Router.get("/", (req, res) => {
 
 //http://192.168.8.139:1000/wish-list/get-status
 Router.get("/get-wishlist", async (req, res) => {
-  let userId = req.query.userId || "user1"; // User id should be passed as a query parameter.
+  let userId = req.query.userEmail || "user1"; // User id should be passed as a query parameter.
   console.log(userId);
   WishList.find({ UserId: userId }, async (err, wishList) => {
     if (err) res.status(500).json("Fetch wishlist error");
