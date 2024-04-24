@@ -12,16 +12,16 @@ Router.get("/", (req, res) => {
 Router.get("/get-wishlist", async (req, res) => {
   let userId = req.query.userEmail; // User id should be passed as a query parameter.
   console.log(userId);
-  WishList.find({ UserId: userId }, async (err, wishList) => {
+  WishList.find({ userId }, async (err, wishList) => {
     if (err) res.status(500).json("Fetch wishlist error");
     else {
       // console.log("get-wishlist", wishList);
       if (wishList.length == 0) {
-        res.status(404).json({ message: "No wishlist found" });
+        res.status(404).json("No wishlist found");
       } else {
         // Fetch places from places collection based on the place ids in the wishlist collection
         let places = [];
-        for (const placeId of wishList[0].PlaceIds) {
+        for (const placeId of wishList[0].placeIds) {
           try {
             let docs = await Places.find({ _id: placeId });
             places.push(docs[0]);
@@ -45,13 +45,13 @@ Router.get("/get-status", async (req, res) => {
   let placeId = req.query.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   let isExists = await WishList.findOne({
-    UserId: userId,
-    PlaceIds: { $in: [placeId] },
+    userId,
+    placeIds: { $in: [placeId] },
   });
   if (isExists) {
-    res.status(200).json({ status: true });
+    res.status(200).json(true);
   } else {
-    res.status(200).json({ status: false });
+    res.status(200).json(false);
   }
 });
 
@@ -62,49 +62,43 @@ Router.post("/add-remove-wishlist", async (req, res) => {
   let placeId = req.body.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   // Find the wishlist of the user
-  let wishListOfUser = await WishList.findOne({ UserId: userId });
+  let wishListOfUser = await WishList.findOne({ userId });
   // If wishlist of user is not exists, then create a new wishlist
   if (!wishListOfUser) {
     let newWish = new WishList({
-      PlaceIds: [placeId],
-      UserId: userId,
+      placeIds: [placeId],
+      userId: userId,
     });
     newWish.save((err, doc) => {
-      if (err) res.status(500).json(placeId + "Wishlist add error");
-      res
-        .status(200)
-        .json({ msg: placeId + " Added to wish list", status: "added" });
+      if (err) res.status(500).json(false);
+      res.status(200).json(true);
     });
   }
   // If wishlist of user is exists, then check whether the place is already in the wishlist
   else {
-    let isPlaceExists = wishListOfUser.PlaceIds.includes(placeId);
+    let isPlaceExists = wishListOfUser.placeIds.includes(placeId);
     // If place is not exists in the wishlist, then add the place to the wishlist
     if (!isPlaceExists) {
-      wishListOfUser.PlaceIds.push(placeId);
+      wishListOfUser.placeIds.push(placeId);
       wishListOfUser.save((err, doc) => {
-        if (err) res.status(500).json(placeId + "Wishlist add error");
-        res
-          .status(200)
-          .json({ msg: placeId + " Added to wish list", status: "added" });
+        if (err) res.status(500).json(false);
+        res.status(200).json(true);
       });
     }
     // If place is exists in the wishlist, then remove the place from the wishlist
     else {
       // if the place is the only place in the wishlist, then remove the document
-      if (wishListOfUser.PlaceIds.length == 1) {
+      if (wishListOfUser.placeIds.length == 1) {
         wishListOfUser.deleteOne((err, doc) => {
-          if (err) res.status(500).json(placeId + "Wishlist remove error");
-          res.status(200).json({ msg: " Doc removed", status: "removed" });
+          if (err) res.status(500).json(false);
+          res.status(200).json(true);
         });
       } else {
-        let index = wishListOfUser.PlaceIds.indexOf(placeId);
-        wishListOfUser.PlaceIds.splice(index, 1);
+        let index = wishListOfUser.placeIds.indexOf(placeId);
+        wishListOfUser.placeIds.splice(index, 1);
         wishListOfUser.save((err, doc) => {
-          if (err) res.status(500).json(placeId + "Wishlist remove error");
-          res
-            .status(200)
-            .json({ msg: " Removed from wish list", status: "removed" });
+          if (err) res.status(500).json(false);
+          res.status(200).json(true);
         });
       }
     }

@@ -65,8 +65,7 @@ Router.get("/getLandlord", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
     const place = await Places?.findOne({ _id: placeId });
-    const landlordId = place?.LandlordId;
-    const llDetails = await User.findOne({ _id: landlordId });
+    const llDetails = await User.findOne({ _id: place?.userId });
     console.log("llDetails: ", llDetails);
     res.status(200).json(llDetails);
   } catch (err) {
@@ -77,9 +76,9 @@ Router.get("/getStudent", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
 
-    const reservation = await Reservations.findOne({ PlaceId: placeId });
+    const reservation = await Reservations.findOne({ placeId });
 
-    const studentId = reservation?.UserId;
+    const studentId = reservation?.userId;
     const studentDetails = await User.findOne({ _id: studentId });
 
     res.status(200).json(studentDetails);

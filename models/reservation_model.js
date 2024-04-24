@@ -1,18 +1,24 @@
 const mongoose = require("mongoose");
 
-const reservation = mongoose.Schema({
-  UserId: {
+module.exports = mongoose.model("Reservation", {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  PlaceId: {
+  placeId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Places",
   },
-  Date: {
+  checkIn: {
     type: Date,
-    default: Date.now(),
+    default: null,
+  },
+  checkOut: {
+    type: Date,
+    default: null,
+  },
+  status: {
+    type: String,
+    default: "PENDING",
   },
 });
-
-module.exports = mongoose.model("Reservation", reservation);

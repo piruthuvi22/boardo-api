@@ -1,15 +1,14 @@
 const mongoose = require("mongoose");
 
-const wishList = mongoose.Schema({
-  UserId: {
-    type: String,
-    default: "user1",
+module.exports = mongoose.model("WishList", {
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
   },
-  PlaceIds: [
+  placeIds: [
     {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Places",
     },
   ],
 });
-
-module.exports = mongoose.model("WishList", wishList);

@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "nodemon":"nodemon server.js",
+    "start": "nodemon server.js",
+    "nodemon": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -20,6 +20,6 @@
     "nodemon": "^2.0.19"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   }
 }

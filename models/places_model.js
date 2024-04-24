@@ -1,63 +1,56 @@
 const mongoose = require("mongoose");
-// const Double = require("@mongoosejs/double");
 
-// require("mongoose-double")(mongoose);
-// var SchemaTypes = mongoose.Schema.Types;
-
-const PlaceSchema = mongoose.Schema({
-  LandlordId: {
+module.exports = mongoose.model("Places", {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
   },
-  PlaceTitle: {
+  name: {
     type: String,
   },
-  PlaceDescription: {
+  description: {
     type: String,
   },
-  ImageUrl: {
-    type: String,
+  imageUrls: {
+    type: Array,
   },
-  Rating: {
-    type: String,
+  rating: {
+    type: Number,
   },
-  Coordinates: {
-    Latitude: {
+  coordinates: {
+    latitude: {
       type: Number,
     },
-    Longitude: {
+    longitude: {
       type: Number,
     },
   },
-  Facilities: {
-    RoomType: {
+  facilities: {
+    roomType: {
       type: String,
     },
-    NoOfBeds: {
+    noOfBeds: {
       type: Number,
     },
-    WashRoomType: {
+    washRoomType: {
       type: Array,
     },
-    OfferingMeals: {
-      type: Boolean,
-      default: false,
-    },
-    Facilities: {
-      type: Array,
-    },
-    Payment: {
+    facilities: [
+      {
+        type: String,
+        ref: "Facilities",
+      },
+    ],
+    paymentType: {
       type: String,
       default: "Monthly",
     },
   },
-  Cost: {
+  cost: {
     type: Number,
   },
   status: {
     type: String,
-    default: "AVAILABLE", // AVAILABLE, RESERVED, BLOCKED
+    default: "AVAILABLE", // AVAILABLE,PENDING, RESERVED, BLOCKED
   },
 });
-
-module.exports = mongoose.model("Places", PlaceSchema);
