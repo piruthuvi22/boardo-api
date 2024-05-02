@@ -41,8 +41,9 @@ Router.put("/update-profile", async (req, res) => {
   user.phoneNumber = phoneNumber;
   user.province = province;
   user.district = district;
-  user.save();
-  res.status(200).send(true);
+  user.save().then((doc) => {
+    res.status(200).json(doc);
+  });
 });
 
 Router.get("/get-contact-number", async (req, res) => {
