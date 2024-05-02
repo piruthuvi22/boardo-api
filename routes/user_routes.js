@@ -24,7 +24,7 @@ Router.post("/register", async (req, res) => {
     if (err) {
       res.json(err);
     }
-    console.log("Saved");
+    console.log("User saved successfully", doc);
     res.status(200).json(doc);
   });
 });
@@ -77,7 +77,7 @@ Router.get("/get-admin", async (req, res) => {
     res.status(500).json(err);
   }
 });
-Router.get("/get-student", async (req, res) => {
+Router.get("/get-student-by-placeId", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
 
@@ -89,6 +89,22 @@ Router.get("/get-student", async (req, res) => {
     res.status(200).json(studentDetails);
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+Router.get("/get-user-by-email/:email/:userRole", async (req, res) => {
+  const email = req.params.email;
+  const userRole = req.params.userRole;
+
+  console.log("email: ", email);
+  console.log("userRole: ", userRole);
+
+  const user = await User.findOne({ email: email , userRole: userRole});
+
+  console.log("user: ", user);
+
+  if (user) {
+    res.status(200).json(user);
   }
 });
 module.exports = Router;
