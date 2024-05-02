@@ -15,19 +15,23 @@ Router.get("/get-places/user", async (req, res) => {
   if (!user) {
     res.status(404).json("Account not found");
   }
-  const places = await Places.find({ LandlordId: user?._id });
+  const places = await Places.find({ userId: user?._id });
   res.status(200).json(places);
 });
 //http://192.168.8.139:1000/places/create-place
 Router.post("/create-place", async (req, res) => {
   const bodyData = req.body;
 
-  const user = await Users.findOne({ email: bodyData?.userEmail });
+  // const user = await Users.findOne({ email: bodyData?.userEmail });
 
+  let id = "662fce10ebac6357cd9d4c47";
   let newPlace = new Places({
-    userId: user?._id,
+    // userId: user?._id,
+    userId: id,
     name: bodyData?.name,
     description: bodyData?.description,
+
+    address: bodyData?.address,
     imageUrls: bodyData?.imageUrls,
     rating: "4.2",
     coordinates: {
@@ -39,14 +43,43 @@ Router.post("/create-place", async (req, res) => {
       noOfBeds: bodyData?.facilities?.noOfBeds,
       washRoomType: bodyData?.facilities?.washRoomType,
       facilities: bodyData?.facilities?.facilities,
-      paymentType: bodyData?.facilities?.paymentType,
     },
+    paymentType: bodyData?.facilities?.paymentType,
     cost: bodyData?.cost,
   });
   newPlace.save((err, doc) => {
     if (err) res.status(500).json("Place save error");
     res.status(200).json(doc);
   });
+});
+
+Router.put("/update-place/:id", async (req, res) => {
+  const bodyData = req.body;
+  Places.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: bodyData?.name,
+      description: bodyData?.description,
+      address: bodyData?.address,
+      imageUrls: bodyData?.imageUrls,
+      coordinates: {
+        latitude: bodyData?.coordinates?.latitude,
+        longitude: bodyData?.coordinates?.longitude,
+      },
+      facilities: {
+        roomType: bodyData?.facilities?.roomType,
+        noOfBeds: bodyData?.facilities?.noOfBeds,
+        washRoomType: bodyData?.facilities?.washRoomType,
+        facilities: bodyData?.facilities?.facilities,
+      },
+      paymentType: bodyData?.facilities?.paymentType,
+      cost: bodyData?.cost,
+    },
+    (err, doc) => {
+      if (err) res.status(500).json("Place update error");
+      res.status(200).json(doc);
+    }
+  );
 });
 
 //http://192.168.8.139:1000/places/get-places
