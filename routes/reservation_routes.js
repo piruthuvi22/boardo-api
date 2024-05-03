@@ -155,28 +155,38 @@ Router.post("/cancel", async (req, res) => {
 Router.get("/get-reservation/:adminId", async (req, res) => {
   const adminId = req.params?.adminId;
   try {
-    const reservation = await Reservation.findOne({ adminId: adminId });
-    if (!reservation) return res.json(false);
+    const reservation = await Reservation.find({ adminId: adminId });
+    if (!reservation)
+      return res.status(404).json("Reservation does not exist.");
 
-    const place = await Place.findOne({ _id: reservation?.placeId });
+    if (reservation.length > 0) {
+      let responseArray=[];
+      for (let i = 0; i < reservation.length; i++) {
+        const place = await Place.findOne({ _id: reservation[i]?.placeId });
+        if (!place) return res.status(404).json("Place does not exist.");
 
-    const admin = await User.findOne({_id:reservation?.adminId});
+        const admin = await User.findOne({ _id: reservation[i]?.adminId });
+        if (!admin) return res.status(404).json("Admin does not exist.");
 
-    const student = await User.findOne({_id:reservation?.userId});
+        const student = await User.findOne({ _id: reservation[i]?.userId });
+        if (!student) return res.status(404).json("Student does not exist.");
 
-    const response = {
-      _id: place?._id,
-      placeName: place?.name,
-      placeUrl: place.imageUrls[0].url,
-      studentName: student?.name,
-      adminName: admin?.name,
-      checkIn: reservation?.checkIn,
-      checkOut: reservation?.checkOut,
-      noOfGuests: reservation?.noOfGuests,
-      status: reservation?.status,
-      timestamp: reservation?.timestamp,
-    };
-    res.json(response);
+        const response = {
+          _id: place?._id,
+          placeName: place?.name,
+          placeUrl: place.imageUrls[0].url,
+          studentName: student?.firstName + " " + student?.lastName,
+          adminName: admin?.firstName + " " + admin?.lastName,
+          checkIn: reservation[i]?.checkIn,
+          checkOut: reservation[i]?.checkOut,
+          noOfGuests: reservation[i]?.noOfGuests,
+          status: reservation[i]?.status,
+          timestamp: reservation[i]?.timestamp,
+        };
+        responseArray.push(response);
+      }
+      res.json(responseArray);
+    }
   } catch (error) {
     res.status(500).json(error.message);
   }

@@ -24,7 +24,6 @@ Router.post("/register", async (req, res) => {
     if (err) {
       res.json(err);
     }
-    console.log("User saved successfully", doc);
     res.status(200).json(doc);
   });
 });
@@ -41,6 +40,7 @@ Router.put("/update-profile", async (req, res) => {
   user.phoneNumber = phoneNumber;
   user.province = province;
   user.district = district;
+
   user.save().then((doc) => {
     res.status(200).json(doc);
   });
