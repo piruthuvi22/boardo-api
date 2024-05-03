@@ -11,36 +11,42 @@ Router.get("/", (req, res) => {
 //http://192.168.8.139:1000/users/register
 Router.post("/register", async (req, res) => {
   const bodyData = req.body;
-  console.log("bodyData:", bodyData);
+  const { email, firstName, lastName, userRole } = bodyData;
 
   const user = new User({
-    email: bodyData?.email,
-    userRole: bodyData?.userRole,
+    email,
+    firstName,
+    lastName,
+    userRole,
   });
 
   user.save((err, doc) => {
     if (err) {
       res.json(err);
     }
-    console.log("Saved");
+    console.log("User saved successfully", doc);
     res.status(200).json(doc);
   });
 });
-Router.put("/updateDisplayName", async (req, res) => {
-  const { email, displayName, phoneNumber } = req.body;
+Router.put("/update-profile", async (req, res) => {
+  const { email, firstName, lastName, phoneNumber, province, district } =
+    req.body;
   const user = await User.findOne({ email: email });
-  console.log(user);
-  if (user) {
-    user.displayName = displayName;
-    user.phoneNumber = phoneNumber;
-    user.save();
-    res.status(200).json("Update success");
-  } else {
-    res.status(404).json("Account not found");
+
+  if (user == null) {
+    return res.status(404).send(false);
   }
+  user.firstName = firstName;
+  user.lastName = lastName;
+  user.phoneNumber = phoneNumber;
+  user.province = province;
+  user.district = district;
+  user.save().then((doc) => {
+    res.status(200).json(doc);
+  });
 });
 
-Router.get("/getContactNumber", async (req, res) => {
+Router.get("/get-contact-number", async (req, res) => {
   const email = req.query?.email;
   const user = await User.findOne({ email });
   if (user) {
@@ -51,7 +57,7 @@ Router.get("/getContactNumber", async (req, res) => {
 });
 
 //http://192.168.8.139:1000/users/getUserRole
-Router.get("/getUserRole", async (req, res) => {
+Router.get("/get-user-role", async (req, res) => {
   const email = req.query.email;
   let userData = await User.findOne({ email: email });
   if (userData) {
@@ -61,7 +67,7 @@ Router.get("/getUserRole", async (req, res) => {
   }
 });
 
-Router.get("/getLandlord", async (req, res) => {
+Router.get("/get-admin", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
     const place = await Places?.findOne({ _id: placeId });
@@ -72,7 +78,7 @@ Router.get("/getLandlord", async (req, res) => {
     res.status(500).json(err);
   }
 });
-Router.get("/getStudent", async (req, res) => {
+Router.get("/get-student-by-placeId", async (req, res) => {
   try {
     const placeId = req.query?.placeId;
 
@@ -84,6 +90,22 @@ Router.get("/getStudent", async (req, res) => {
     res.status(200).json(studentDetails);
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+Router.get("/get-user-by-email/:email/:userRole", async (req, res) => {
+  const email = req.params.email;
+  const userRole = req.params.userRole;
+
+  console.log("email: ", email);
+  console.log("userRole: ", userRole);
+
+  const user = await User.findOne({ email: email , userRole: userRole});
+
+  console.log("user: ", user);
+
+  if (user) {
+    res.status(200).json(user);
   }
 });
 module.exports = Router;

@@ -4,7 +4,16 @@ module.exports = mongoose.model("User", {
   email: {
     type: String,
   },
-  displayName: {
+  firstName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+  },
+  province: {
+    type: String,
+  },
+  district: {
     type: String,
   },
   userRole: {
