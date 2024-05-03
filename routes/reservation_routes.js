@@ -121,4 +121,34 @@ Router.post("/cancel", async (req, res) => {
   }
 });
 
+Router.get("/get-reservation/:adminId", async (req, res) => {
+  const adminId = req.params?.adminId;
+  try {
+    const reservation = await Reservation.findOne({ adminId: adminId });
+    if (!reservation) return res.json(false);
+
+    const place = await Place.findOne({ _id: reservation?.placeId });
+
+    const admin = await User.findOne({_id:reservation?.adminId});
+
+    const student = await User.findOne({_id:reservation?.userId});
+
+    const response = {
+      _id: place?._id,
+      placeName: place?.name,
+      placeUrl: place.imageUrls[0].url,
+      studentName: student?.name,
+      adminName: admin?.name,
+      checkIn: reservation?.checkIn,
+      checkOut: reservation?.checkOut,
+      noOfGuests: reservation?.noOfGuests,
+      status: reservation?.status,
+      timestamp: reservation?.timestamp,
+    };
+    res.json(response);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+});
+
 module.exports = Router;
