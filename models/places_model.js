@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = mongoose.model("Places", {
+const placeSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
@@ -29,6 +29,10 @@ module.exports = mongoose.model("Places", {
   ],
   rating: {
     type: Number,
+  },
+  location: {
+    type: { type: String, default: "Point" }, // GeoJSON Point type
+    coordinates: [Number], // Array of [longitude, latitude]
   },
   coordinates: {
     latitude: {
@@ -67,3 +71,7 @@ module.exports = mongoose.model("Places", {
     default: "AVAILABLE", // AVAILABLE,PENDING, RESERVED, BLOCKED
   },
 });
+
+placeSchema.index({ location: "2dsphere" });
+
+module.exports = mongoose.model("Places", placeSchema);
