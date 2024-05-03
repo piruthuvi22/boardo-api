@@ -10,40 +10,71 @@ Router.get("/", (req, res) => {
 });
 
 Router.post("/new-reservation", async (req, res) => {
-  let { userEmail, placeId, checkIn, checkOut } = req.body;
-  console.log("UserEmail", userEmail, "PlaceId", placeId);
+  let { userId, placeId, adminId, checkIn, checkOut, noOfGuests, message } =
+    req.body;
+  // console.log(req.body);
   try {
     //  check if place exists
     const place = await Place.findOne({ _id: placeId });
-
     if (!place) return res.status(400).json("Place does not exist.");
 
     // check if place is available
-    if (place.status !== "AVAILABLE")
-      return res.status(400).json("Place is not available.");
+    // if (place.status !== "AVAILABLE")
+    //   return res.status(400).json("Place is not available.");
 
-    // get user id
-    const user = await User.findOne({ email: userEmail });
-    const userId = user._id;
+    const existingReservations = await Reservation.find({
+      placeId: placeId,
+      $and: [
+        {
+          checkIn: { $lte: checkOut },
+        },
+        {
+          checkOut: { $gte: checkIn },
+        },
+      ],
+    });
+
+    if (existingReservations.length > 0) {
+      return res
+        .status(400)
+        .json("Place is not available for the selected dates.");
+    }
+
     // create new reservation
     const newReservation = new Reservation({
       userId,
+      adminId,
       placeId,
       checkIn,
       checkOut,
+      noOfGuests,
+      message,
     });
     // save reservation
     const reservation = await newReservation.save();
 
     // update place status
-
-    await Place.findByIdAndUpdate(placeId, { status: "PENDING" });
+    // await Place.findByIdAndUpdate(placeId, { status: "PENDING" });
 
     res.status(200).json(reservation);
   } catch (error) {
     res.status(500).json(error);
   }
 });
+
+// GET reservations of place
+Router.get("/get-reservations/place/:placeId", async (req, res) => {
+  const placeId = req.params.placeId;
+  try {
+    const reservations = await Reservation.find({ placeId }).select(
+      "-__v -userId -noOfGuests -message -status -timestamp"
+    );
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 Router.put("/accepted", async (req, res) => {
   const { placeId } = req.body;
   try {

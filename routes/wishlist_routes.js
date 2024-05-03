@@ -9,10 +9,10 @@ Router.get("/", (req, res) => {
 });
 
 //http://192.168.8.139:1000/wish-list/get-status
-Router.get("/get-wishlist", async (req, res) => {
-  let userId = req.query.userEmail; // User id should be passed as a query parameter.
-  console.log(userId);
-  WishList.find({ userId }, async (err, wishList) => {
+Router.get("/get-wishlist/:userEmail", async (req, res) => {
+  let userEmail = req.params.userEmail; // User id should be passed as a query parameter.
+  console.log(userEmail);
+  WishList.findOne({ email: userEmail }, async (err, wishList) => {
     if (err) res.status(500).json("Fetch wishlist error");
     else {
       // console.log("get-wishlist", wishList);
@@ -41,11 +41,11 @@ Router.get("/get-wishlist", async (req, res) => {
 
 //http://192.168.8.139:1000/wish-list/get-status
 Router.get("/get-status", async (req, res) => {
-  let userId = req.query.userEmail || "user1"; // User id should be passed as a query parameter.
+  let userEmail = req.query.userEmail || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
   let placeId = req.query.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   let isExists = await WishList.findOne({
-    userId,
+    email: userEmail,
     placeIds: { $in: [placeId] },
   });
   if (isExists) {
@@ -58,16 +58,16 @@ Router.get("/get-status", async (req, res) => {
 //http://192.168.8.139:1000/wish-list/add-to-wish
 Router.post("/add-remove-wishlist", async (req, res) => {
   // console.log(req.body);
-  let userId = req.body.userEmail || "user1"; // User id should be passed as a query parameter.
+  let userEmail = req.body.userEmail || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
   let placeId = req.body.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   // Find the wishlist of the user
-  let wishListOfUser = await WishList.findOne({ userId });
+  let wishListOfUser = await WishList.findOne({ email: userEmail });
   // If wishlist of user is not exists, then create a new wishlist
   if (!wishListOfUser) {
     let newWish = new WishList({
       placeIds: [placeId],
-      userId: userId,
+      email: userEmail,
     });
     newWish.save((err, doc) => {
       if (err) res.status(500).json(false);

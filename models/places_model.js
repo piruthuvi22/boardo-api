@@ -11,9 +11,22 @@ module.exports = mongoose.model("Places", {
   description: {
     type: String,
   },
-  imageUrls: {
-    type: Array,
+  address: {
+    type: String,
   },
+  imageUrls: [
+    {
+      url: {
+        type: String,
+      },
+      name: {
+        type: String,
+      },
+      fileRef: {
+        type: String,
+      },
+    },
+  ],
   rating: {
     type: Number,
   },
@@ -41,10 +54,10 @@ module.exports = mongoose.model("Places", {
         ref: "Facilities",
       },
     ],
-    paymentType: {
-      type: String,
-      default: "Monthly",
-    },
+  },
+  paymentType: {
+    type: String,
+    default: "Monthly",
   },
   cost: {
     type: Number,

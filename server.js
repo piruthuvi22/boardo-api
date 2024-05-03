@@ -9,7 +9,7 @@ const users = require("./routes/user_routes");
 const places = require("./routes/places_routes");
 const wishlist = require("./routes/wishlist_routes");
 const reservation = require("./routes/reservation_routes");
-const places_model = require("./models/places_model");
+const feedback = require("./routes/feedback_routes");
 
 require("dotenv").config();
 const uri = process.env.MONGO_URI;
@@ -19,8 +19,9 @@ app.use(cors());
 
 app.use("/api/users", users);
 app.use("/api/places", places);
-app.use("/api/wish-list", wishlist);
+app.use("/api/wishlist", wishlist);
 app.use("/api/reservation", reservation);
+app.use("/api/feedback", feedback);
 
 let connection = mongoose.connect(uri, {
   dbName: "boardo",
