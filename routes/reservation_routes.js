@@ -4,6 +4,7 @@ const Router = express.Router();
 const Reservation = require("../models/reservation_model");
 const Place = require("../models/places_model");
 const User = require("../models/user_model");
+const dateFormatter = require("../utils/date_formatter");
 
 Router.get("/", (req, res) => {
   res.send("Reservations");
@@ -75,39 +76,6 @@ Router.get("/get-reservations/place/:placeId", async (req, res) => {
   }
 });
 
-Router.put("/accepted", async (req, res) => {
-  const { placeId } = req.body;
-  try {
-    // update place status
-    await Place.findByIdAndUpdate(placeId, { status: "RESERVED" });
-    res.json("Place accepted");
-  } catch (error) {
-    res.json(error.message);
-  }
-});
-
-Router.put("/rejected", async (req, res) => {
-  const { placeId } = req.body;
-  try {
-    // update place status
-    await Place.findByIdAndUpdate(placeId, { status: "AVAILABLE" });
-    res.json("Place rejected");
-  } catch (error) {
-    res.json(error.message);
-  }
-});
-
-Router.put("/available", async (req, res) => {
-  const { placeId } = req.body;
-  try {
-    // update place status
-    await Place.findByIdAndUpdate(placeId, { status: "AVAILABLE" });
-    res.json("Place available");
-  } catch (error) {
-    res.json(error.message);
-  }
-});
-
 Router.get("/getAvailableNotification", async (req, res) => {
   const userEmail = req.query?.email;
   const placeId = req.query?.placeId;
@@ -160,7 +128,7 @@ Router.get("/get-reservation/:adminId", async (req, res) => {
       return res.status(404).json("Reservation does not exist.");
 
     if (reservation.length > 0) {
-      let responseArray=[];
+      let responseArray = [];
       for (let i = 0; i < reservation.length; i++) {
         const place = await Place.findOne({ _id: reservation[i]?.placeId });
         if (!place) return res.status(404).json("Place does not exist.");
@@ -171,17 +139,22 @@ Router.get("/get-reservation/:adminId", async (req, res) => {
         const student = await User.findOne({ _id: reservation[i]?.userId });
         if (!student) return res.status(404).json("Student does not exist.");
 
+        const formatedRequestedTime = dateFormatter(reservation[i]?.timestamp);
+        const formattedCheckInTime = dateFormatter(reservation[i]?.checkIn);
+        const formattedCheckOutTime = dateFormatter(reservation[i]?.checkOut);
+
         const response = {
-          _id: place?._id,
+          _id: reservation[i]?._id,
           placeName: place?.name,
           placeUrl: place.imageUrls[0].url,
           studentName: student?.firstName + " " + student?.lastName,
           adminName: admin?.firstName + " " + admin?.lastName,
-          checkIn: reservation[i]?.checkIn,
-          checkOut: reservation[i]?.checkOut,
+          checkIn: formattedCheckInTime,
+          checkOut: formattedCheckOutTime,
+          message: reservation[i]?.message,
           noOfGuests: reservation[i]?.noOfGuests,
           status: reservation[i]?.status,
-          timestamp: reservation[i]?.timestamp,
+          timestamp: formatedRequestedTime,
         };
         responseArray.push(response);
       }
@@ -189,6 +162,23 @@ Router.get("/get-reservation/:adminId", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json(error.message);
+  }
+});
+
+Router.put("/update-status/:reservationId", async (req, res) => {
+  const reservationId = req.params.reservationId;
+  const { status } = req.body;
+  try {
+    const reservation = await Reservation.findByIdAndUpdate(
+      reservationId,
+      { status },
+      { new: true }
+    );
+    if (!reservation)
+      return res.status(404).json("Reservation does not exist.");
+    res.status(200).json(reservation);
+  } catch (error) {
+    res.status(500).json(error);
   }
 });
 
