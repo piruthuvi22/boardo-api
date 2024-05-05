@@ -6,7 +6,7 @@ Router.get("/", (req, res) => {
   res.send("Feedback ");
 });
 
-Router.get("/get-feedback/:placeId", async (req, res) => {
+Router.get("/get-feedback/place/:placeId", async (req, res) => {
   try {
     const feedbacks = await Feedback.find({ placeId: req.params.placeId });
     res.status(200).json(feedbacks);
@@ -16,9 +16,12 @@ Router.get("/get-feedback/:placeId", async (req, res) => {
   }
 });
 
-Router.get("/get-feedback-by-user/:userId", async (req, res) => {
+Router.get("/get-feedback/user/:userId/place/:placeId", async (req, res) => {
   try {
-    const feedback = await Feedback.findOne({ userId: req.params.userId });
+    const feedback = await Feedback.findOne({
+      userId: req.params.userId,
+      placeId: req.params.placeId,
+    });
     res.status(200).json(feedback);
   } catch (err) {
     console.error(err);

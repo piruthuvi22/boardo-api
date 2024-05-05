@@ -13,14 +13,12 @@ Router.get("/get-wishlist/user/:userId", (req, res) => {
   WishList.findOne({ userId }, async (err, wishList) => {
     if (err) res.status(500).json("Fetch wishlist error");
     else {
-      console.log("get-wishlist", wishList);
-      // console.log("get-wishlist", wishList);
-      if (wishList.length == 0) {
+      if (wishList == null) {
         res.status(404).json("No wishlist found");
       } else {
         // Fetch places from places collection based on the place ids in the wishlist collection
         let places = [];
-        for (const placeId of wishList.placeIds) {
+        for (const placeId of wishList?.placeIds) {
           try {
             let docs = await Places.find({ _id: placeId });
             places.push(docs[0]);
