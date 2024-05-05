@@ -148,6 +148,7 @@ Router.get("/get-reservation/:adminId", async (req, res) => {
           placeName: place?.name,
           placeUrl: place.imageUrls[0].url,
           studentName: student?.firstName + " " + student?.lastName,
+          studentNumber: student?.phoneNumber,
           adminName: admin?.firstName + " " + admin?.lastName,
           checkIn: formattedCheckInTime,
           checkOut: formattedCheckOutTime,
