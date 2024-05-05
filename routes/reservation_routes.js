@@ -25,6 +25,7 @@ Router.post("/new-reservation", async (req, res) => {
 
     const existingReservations = await Reservation.find({
       placeId: placeId,
+      status: "ACCEPTED",
       $and: [
         {
           checkIn: { $lte: checkOut },
@@ -67,9 +68,24 @@ Router.post("/new-reservation", async (req, res) => {
 Router.get("/get-reservations/place/:placeId", async (req, res) => {
   const placeId = req.params.placeId;
   try {
-    const reservations = await Reservation.find({ placeId }).select(
-      "-__v -userId -noOfGuests -message -status -timestamp"
-    );
+    const reservations = await Reservation.find({
+      placeId,
+      status: "ACCEPTED",
+    }).select("-__v -userId -noOfGuests -message -status -timestamp");
+    res.status(200).json(reservations);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
+Router.get("/get-reservations/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    // Find all reservations of the user from Reservation entity and include the place name and image from Place entit in the response
+    const reservations = await Reservation.find({ userId })
+      .populate("placeId", "name imageUrls rating cost", Place)
+      .select("-__v -adminId");
+
     res.status(200).json(reservations);
   } catch (error) {
     res.status(500).json(error);

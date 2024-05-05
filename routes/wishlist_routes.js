@@ -8,20 +8,19 @@ Router.get("/", (req, res) => {
   res.send("WishList ");
 });
 
-//http://192.168.8.139:1000/wish-list/get-status
-Router.get("/get-wishlist/:userEmail", async (req, res) => {
-  let userEmail = req.params.userEmail; // User id should be passed as a query parameter.
-  console.log(userEmail);
-  WishList.findOne({ email: userEmail }, async (err, wishList) => {
+Router.get("/get-wishlist/user/:userId", (req, res) => {
+  let userId = req.params.userId;
+  WishList.findOne({ userId }, async (err, wishList) => {
     if (err) res.status(500).json("Fetch wishlist error");
     else {
+      console.log("get-wishlist", wishList);
       // console.log("get-wishlist", wishList);
       if (wishList.length == 0) {
         res.status(404).json("No wishlist found");
       } else {
         // Fetch places from places collection based on the place ids in the wishlist collection
         let places = [];
-        for (const placeId of wishList[0].placeIds) {
+        for (const placeId of wishList.placeIds) {
           try {
             let docs = await Places.find({ _id: placeId });
             places.push(docs[0]);
@@ -38,14 +37,13 @@ Router.get("/get-wishlist/:userEmail", async (req, res) => {
     }
   });
 });
-
 //http://192.168.8.139:1000/wish-list/get-status
 Router.get("/get-status", async (req, res) => {
-  let userEmail = req.query.userEmail || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
+  let userId = req.query.userId || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
   let placeId = req.query.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   let isExists = await WishList.findOne({
-    email: userEmail,
+    userId,
     placeIds: { $in: [placeId] },
   });
   if (isExists) {
@@ -58,20 +56,20 @@ Router.get("/get-status", async (req, res) => {
 //http://192.168.8.139:1000/wish-list/add-to-wish
 Router.post("/add-remove-wishlist", async (req, res) => {
   // console.log(req.body);
-  let userEmail = req.body.userEmail || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
+  let userId = req.body.userId || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
   let placeId = req.body.placeId || "placeId"; // placeId should be passed as a query parameter.
 
   // Find the wishlist of the user
-  let wishListOfUser = await WishList.findOne({ email: userEmail });
+  let wishListOfUser = await WishList.findOne({ userId });
   // If wishlist of user is not exists, then create a new wishlist
   if (!wishListOfUser) {
     let newWish = new WishList({
       placeIds: [placeId],
-      email: userEmail,
+      userId,
     });
     newWish.save((err, doc) => {
       if (err) res.status(500).json(false);
-      res.status(200).json(true);
+      res.status(200).send(true);
     });
   }
   // If wishlist of user is exists, then check whether the place is already in the wishlist
@@ -82,7 +80,7 @@ Router.post("/add-remove-wishlist", async (req, res) => {
       wishListOfUser.placeIds.push(placeId);
       wishListOfUser.save((err, doc) => {
         if (err) res.status(500).json(false);
-        res.status(200).json(true);
+        res.status(200).send(true);
       });
     }
     // If place is exists in the wishlist, then remove the place from the wishlist
@@ -91,14 +89,14 @@ Router.post("/add-remove-wishlist", async (req, res) => {
       if (wishListOfUser.placeIds.length == 1) {
         wishListOfUser.deleteOne((err, doc) => {
           if (err) res.status(500).json(false);
-          res.status(200).json(true);
+          res.status(200).send(false);
         });
       } else {
         let index = wishListOfUser.placeIds.indexOf(placeId);
         wishListOfUser.placeIds.splice(index, 1);
         wishListOfUser.save((err, doc) => {
           if (err) res.status(500).json(false);
-          res.status(200).json(true);
+          res.status(200).send(false);
         });
       }
     }

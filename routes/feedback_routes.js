@@ -16,6 +16,16 @@ Router.get("/get-feedback/:placeId", async (req, res) => {
   }
 });
 
+Router.get("/get-feedback-by-user/:userId", async (req, res) => {
+  try {
+    const feedback = await Feedback.findOne({ userId: req.params.userId });
+    res.status(200).json(feedback);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ data: null, message: "Error finding feedback" });
+  }
+});
+
 Router.post("/create-feedback", async (req, res) => {
   try {
     const feedback = new Feedback(req.body);

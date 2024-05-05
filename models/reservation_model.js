@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.exports = mongoose.model("Reservation", {
+const reservationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -33,6 +33,14 @@ module.exports = mongoose.model("Reservation", {
   },
   status: {
     type: String,
-    default: "PENDING",
+    default: "PENDING", // PENDING, ACCEPTED, REJECTED
   },
 });
+
+reservationSchema.virtual("place", {
+  ref: "Places",
+  localField: "placeId",
+  foreignField: "_id",
+});
+
+module.exports = mongoose.model("Reservation", reservationSchema);

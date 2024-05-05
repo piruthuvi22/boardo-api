@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
-module.exports = mongoose.model("WishList", {
+const wishlistSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+  },
   email: {
     type: mongoose.Schema.Types.String,
     ref: "Users",
@@ -12,3 +16,5 @@ module.exports = mongoose.model("WishList", {
     },
   ],
 });
+
+module.exports = mongoose.model("Wishlist", wishlistSchema);

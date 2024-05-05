@@ -18,6 +18,34 @@ Router.get("/get-places/user", async (req, res) => {
   const places = await Places.find({ userId: user?._id });
   res.status(200).json(places);
 });
+
+Router.get("/get-nearest-places", async (req, res) => {
+  const { latitude, longitude, radius } = req.query;
+  Places.find(
+    {
+      location: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: radius || 1000,
+        },
+      },
+    },
+    (err, docs) => {
+      if (err) {
+        return res.status(500).json(err);
+      } else {
+        if (docs.length == 0) {
+          res.status(404).json("No places found");
+        } else {
+          res.status(200).json(docs);
+        }
+      }
+    }
+  );
+});
 //http://192.168.8.139:1000/places/create-place
 Router.post("/create-place", async (req, res) => {
   const bodyData = req.body;
@@ -34,6 +62,13 @@ Router.post("/create-place", async (req, res) => {
     address: bodyData?.address,
     imageUrls: bodyData?.imageUrls,
     rating: "4.2",
+    location: {
+      type: "Point",
+      coordinates: [
+        parseFloat(bodyData?.coordinates?.longitude),
+        parseFloat(bodyData?.coordinates?.latitude),
+      ],
+    },
     coordinates: {
       latitude: bodyData?.coordinates?.latitude,
       longitude: bodyData?.coordinates?.longitude,
