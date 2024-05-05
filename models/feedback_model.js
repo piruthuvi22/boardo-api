@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
-module.exports = mongoose.model("Feedback", {
-  email: {
-    type: String,
+const feedbackSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   placeId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -24,3 +25,5 @@ module.exports = mongoose.model("Feedback", {
     type: String,
   },
 });
+
+module.exports = mongoose.model("Feedback", feedbackSchema);
