@@ -140,7 +140,7 @@ Router.get("/get-reservation/:adminId", async (req, res) => {
   const adminId = req.params?.adminId;
   try {
     const reservation = await Reservation.find({ adminId: adminId });
-    if (!reservation)
+    if (reservation.length === 0)
       return res.status(404).json("Reservation does not exist.");
 
     if (reservation.length > 0) {
