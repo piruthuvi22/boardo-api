@@ -13,6 +13,11 @@ Router.post("/register", async (req, res) => {
   const bodyData = req.body;
   const { email, firstName, lastName, userRole } = bodyData;
 
+  const existingUser = await User.findOne({ email: email, userRole: userRole });
+  if (existingUser) {
+    return res.status(200).json(existingUser);
+  }
+
   const user = new User({
     email,
     firstName,
@@ -96,7 +101,7 @@ Router.get("/get-user-by-email/:email/:userRole", async (req, res) => {
   const email = req.params.email;
   const userRole = req.params.userRole;
 
-  const user = await User.findOne({ email: email , userRole: userRole});
+  const user = await User.findOne({ email: email, userRole: userRole });
   if (user) {
     res.status(200).json(user);
   }
