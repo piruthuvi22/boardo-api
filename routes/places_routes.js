@@ -9,9 +9,9 @@ const Users = require("../models/user_model");
 Router.get("/", async (req, res) => {
   res.send("Places ");
 });
-Router.get("/get-places/user", async (req, res) => {
-  const email = req.query?.email;
-  const user = await Users.findOne({ email });
+Router.get("/get-places/user/:id", async (req, res) => {
+  const userId = req.params.id;
+  const user = await Users.findById(userId);
   if (!user) {
     res.status(404).json("Account not found");
   }
@@ -20,32 +20,61 @@ Router.get("/get-places/user", async (req, res) => {
 });
 
 Router.get("/get-nearest-places", async (req, res) => {
-  const { latitude, longitude, radius } = req.query;
-  Places.find(
-    {
-      location: {
-        $nearSphere: {
-          $geometry: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          $maxDistance: radius || 1000,
+  const {
+    placeName,
+    placeDescription,
+    minBudget,
+    maxBudget,
+    rating,
+    radius,
+    paymentType,
+    latitude,
+    longitude,
+    facility,
+  } = req.query;
+
+  let filter = {};
+
+  if (minBudget && !isNaN(minBudget)) {
+    filter.cost = {
+      $gte: minBudget,
+    };
+  }
+  if (maxBudget && !isNaN(maxBudget)) {
+    filter.cost = {
+      $lte: maxBudget,
+    };
+  }
+  if (latitude && longitude) {
+    filter.location = {
+      $nearSphere: {
+        $geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude],
         },
+        $maxDistance: radius || 5000,
       },
-    },
-    (err, docs) => {
-      if (err) {
-        return res.status(500).json(err);
+    };
+  }
+  if (facility) filter.facilities.facilities = { $in: ["ac"] }; // Search for places with any of the facilities in the array
+  if (rating && !isNaN(rating)) filter.rating = { $gte: rating };
+  if (placeName) filter.name = new RegExp(placeName, "i");
+  if (placeDescription) filter.description = new RegExp(placeDescription, "i");
+  if (paymentType) filter.paymentType = new RegExp(paymentType, "i");
+
+  Places.find(filter, (err, docs) => {
+    if (err) {
+      return res.status(500).json(err);
+    } else {
+      if (docs.length == 0) {
+        res.status(404).json("No places found");
       } else {
-        if (docs.length == 0) {
-          res.status(404).json("No places found");
-        } else {
-          res.status(200).json(docs);
-        }
+        res.status(200).json(docs);
       }
     }
-  );
+  });
 });
+
 //http://192.168.8.139:1000/places/create-place
 Router.post("/create-place", async (req, res) => {
   const bodyData = req.body;

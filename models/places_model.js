@@ -50,7 +50,7 @@ const placeSchema = new mongoose.Schema({
       type: Number,
     },
     washRoomType: {
-      type: Array,
+      type: String,
     },
     facilities: [
       {
