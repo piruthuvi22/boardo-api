@@ -1,6 +1,7 @@
 const express = require("express");
 const Router = express.Router();
 const Feedback = require("../models/feedback_model");
+const Places = require("../models/places_model");
 
 Router.get("/", (req, res) => {
   res.send("Feedback ");
@@ -33,6 +34,19 @@ Router.post("/create-feedback", async (req, res) => {
   try {
     const feedback = new Feedback(req.body);
     await feedback.save();
+
+    const prevFeedback = await Feedback.find({ placeId: req.body.placeId });
+    if (prevFeedback.length > 0) {
+      const averageRating = prevFeedback.reduce(
+        (acc, feedback) => acc + feedback.rating,
+        0
+      );
+      const rating = averageRating / prevFeedback.length;
+      await Places.findByIdAndUpdate(req.body.placeId, {
+        rating: rating,
+      });
+    }
+
     res.status(200).json(feedback);
   } catch (err) {
     console.error(err);

@@ -81,7 +81,7 @@ Router.post("/create-place", async (req, res) => {
 
   // const user = await Users.findOne({ email: bodyData?.userEmail });
 
-  let id = "662fce10ebac6357cd9d4c47";
+  let id = req.body?.userId;
   let newPlace = new Places({
     // userId: user?._id,
     userId: id,
@@ -90,7 +90,7 @@ Router.post("/create-place", async (req, res) => {
 
     address: bodyData?.address,
     imageUrls: bodyData?.imageUrls,
-    rating: "4.2",
+    rating: 0,
     location: {
       type: "Point",
       coordinates: [

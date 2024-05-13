@@ -37,8 +37,8 @@ Router.get("/get-wishlist/user/:userId", (req, res) => {
 });
 //http://192.168.8.139:1000/wish-list/get-status
 Router.get("/get-status", async (req, res) => {
-  let userId = req.query.userId || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
-  let placeId = req.query.placeId || "placeId"; // placeId should be passed as a query parameter.
+  let userId = req.query.userId; // User id should be passed as a query parameter.
+  let placeId = req.query.placeId; // placeId should be passed as a query parameter.
 
   let isExists = await WishList.findOne({
     userId,
@@ -54,8 +54,8 @@ Router.get("/get-status", async (req, res) => {
 //http://192.168.8.139:1000/wish-list/add-to-wish
 Router.post("/add-remove-wishlist", async (req, res) => {
   // console.log(req.body);
-  let userId = req.body.userId || "piruthuvi22@gmail.com"; // User id should be passed as a query parameter.
-  let placeId = req.body.placeId || "placeId"; // placeId should be passed as a query parameter.
+  let userId = req.body.userId; // User id should be passed as a query parameter.
+  let placeId = req.body.placeId; // placeId should be passed as a query parameter.
 
   // Find the wishlist of the user
   let wishListOfUser = await WishList.findOne({ userId });
